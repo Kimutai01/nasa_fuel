@@ -38,11 +38,7 @@ defmodule NasaFuelWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: NasaFuelWeb.Layouts]
-
-      use Gettext, backend: NasaFuelWeb.Gettext
+      use Phoenix.Controller, formats: [:html, :json]
 
       import Plug.Conn
 
@@ -52,8 +48,7 @@ defmodule NasaFuelWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {NasaFuelWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end
@@ -82,16 +77,14 @@ defmodule NasaFuelWeb do
 
   defp html_helpers do
     quote do
-      # Translation
-      use Gettext, backend: NasaFuelWeb.Gettext
-
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components
       import NasaFuelWeb.CoreComponents
 
-      # Shortcut for generating JS commands
+      # Common modules used in templates
       alias Phoenix.LiveView.JS
+      alias NasaFuelWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
