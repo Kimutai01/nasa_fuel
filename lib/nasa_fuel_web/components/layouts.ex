@@ -5,11 +5,16 @@ defmodule NasaFuelWeb.Layouts do
   """
   use NasaFuelWeb, :html
 
+  @docs_url "https://github.com/nasa-fuel/nasa_fuel/blob/main/README.md"
+
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
   # skeleton of your application, namely HTML headers
   # and other static content.
   embed_templates "layouts/*"
+
+  @doc "URL of the system documentation, linked from the header."
+  def docs_url, do: @docs_url
 
   @doc """
   Renders your app layout.
@@ -35,35 +40,31 @@ defmodule NasaFuelWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
+    <header class="sticky top-0 z-30 border-b border-base-300 bg-base-100/85 backdrop-blur">
+      <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+        <a href="/" class="flex w-fit items-center gap-2.5 transition-opacity hover:opacity-70">
+          <.icon name="hero-rocket-launch" class="size-5 text-primary" />
+          <span class="text-[0.9375rem] font-medium tracking-tight">Mission Fuel</span>
         </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <li>
-            <a href="https://phoenix.hexdocs.pm/overview.html" class="btn btn-primary">
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
-          </li>
-        </ul>
+
+        <div class="grow"></div>
+
+        <a
+          id="docs-link"
+          href={docs_url()}
+          target="_blank"
+          rel="noopener"
+          class="flex items-center gap-1.5 text-sm text-base-content/60 transition-colors hover:text-base-content"
+        >
+          Documentation <.icon name="hero-arrow-top-right-on-square-micro" class="size-3.5" />
+        </a>
+
+        <.theme_toggle />
       </div>
     </header>
 
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
+    <main class="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div class="mx-auto max-w-6xl">
         {render_slot(@inner_block)}
       </div>
     </main>
