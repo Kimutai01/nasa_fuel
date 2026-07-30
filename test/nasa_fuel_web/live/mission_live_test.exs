@@ -161,6 +161,50 @@ defmodule NasaFuelWeb.MissionLiveTest do
     end
   end
 
+  describe "the flight path has to be flyable" do
+    test "reports a path that launches twice in a row, and clears the total", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      # Apollo's step 2 is "land Moon"; making it a launch strands the ship.
+      view
+      |> form("#mission-form", mission: %{steps: %{"1" => %{action: "launch"}}})
+      |> render_change()
+
+      assert has_element?(
+               view,
+               "#steps-error",
+               "A flight path cannot launch twice without landing in between"
+             )
+
+      refute costed?(view)
+    end
+
+    test "reports launching from a planet it never landed on", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      # Step 3 is "launch Moon", following a landing on the Moon. Move it to Mars.
+      view
+      |> form("#mission-form", mission: %{steps: %{"2" => %{planet: "mars"}}})
+      |> render_change()
+
+      assert has_element?(
+               view,
+               "#steps-error",
+               "A flight path must launch from the planet it last landed on"
+             )
+
+      refute costed?(view)
+    end
+
+    test "a freshly added step does not trip continuity before it is filled in", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      view |> element("#add-step") |> render_click()
+
+      refute has_element?(view, "#steps-error")
+    end
+  end
+
   describe "a client-supplied step index is not trusted" do
     test "a negative index does not delete a step from the end", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/")

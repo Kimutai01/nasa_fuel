@@ -111,6 +111,85 @@ defmodule NasaFuel.Flight.MissionTest do
              ]
     end
 
+    test "rejects launching twice without landing in between" do
+      attrs =
+        valid_attrs(%{
+          "steps" => [
+            %{"action" => "launch", "planet" => "earth"},
+            %{"action" => "launch", "planet" => "moon"}
+          ]
+        })
+
+      assert %{steps: ["cannot launch twice without landing in between"]} =
+               attrs |> changeset() |> errors_on()
+    end
+
+    test "rejects landing twice without launching in between" do
+      attrs =
+        valid_attrs(%{
+          "steps" => [
+            %{"action" => "land", "planet" => "moon"},
+            %{"action" => "land", "planet" => "mars"}
+          ]
+        })
+
+      assert %{steps: ["cannot land twice without launching in between"]} =
+               attrs |> changeset() |> errors_on()
+    end
+
+    test "rejects launching from a planet it never landed on" do
+      attrs =
+        valid_attrs(%{
+          "steps" => [
+            %{"action" => "launch", "planet" => "earth"},
+            %{"action" => "land", "planet" => "moon"},
+            %{"action" => "launch", "planet" => "mars"}
+          ]
+        })
+
+      assert %{steps: ["must launch from the planet it last landed on"]} =
+               attrs |> changeset() |> errors_on()
+    end
+
+    test "accepts launching from the planet it just landed on" do
+      attrs =
+        valid_attrs(%{
+          "steps" => [
+            %{"action" => "launch", "planet" => "earth"},
+            %{"action" => "land", "planet" => "moon"},
+            %{"action" => "launch", "planet" => "moon"},
+            %{"action" => "land", "planet" => "earth"}
+          ]
+        })
+
+      assert changeset(attrs).valid?
+    end
+
+    test "accepts a path that opens with a landing" do
+      # The brief costs landing Apollo 11 on Earth as a mission on its own, so
+      # requiring a launch first would reject an example from the spec.
+      attrs = valid_attrs(%{"steps" => [%{"action" => "land", "planet" => "earth"}]})
+
+      assert changeset(attrs).valid?
+    end
+
+    test "holds continuity errors until every step is complete" do
+      # Mid-edit the second step has no planet yet. It already says "can't be
+      # blank"; a continuity complaint about a path it cannot form is noise.
+      attrs =
+        valid_attrs(%{
+          "steps" => [
+            %{"action" => "launch", "planet" => "earth"},
+            %{"action" => "launch", "planet" => ""}
+          ]
+        })
+
+      changeset = changeset(attrs)
+
+      assert %{steps: [%{}, %{planet: ["can't be blank"]}]} = errors_on(changeset)
+      assert changeset.errors == []
+    end
+
     test "one invalid step invalidates the whole mission" do
       attrs =
         valid_attrs(%{

@@ -39,7 +39,7 @@ Nothing else is needed:
 ```sh
 mix setup        # fetch deps, install and build assets
 mix phx.server   # http://localhost:4000
-mix test         # 89 tests + 3 doctests, no database required
+mix test         # 98 tests + 3 doctests, no database required
 mix precommit    # the full gate: compile, deps, format, credo, test
 ```
 
@@ -125,6 +125,19 @@ actions for free. Non-positive, fractional and non-numeric masses are rejected
 by the changeset, an empty flight path by `cast_embed(required: true)`. `Fuel`
 then guards its own input independently, so it cannot be misused by a future
 caller that skips the changeset.
+
+The path is also validated as a whole, not just field by field. A ship already
+in flight cannot launch again, one already on the ground cannot land again, and
+it can only depart from wherever it last touched down — so "launch Earth, launch
+Moon" and "land Moon, launch Mars" are both rejected.
+
+One rule is deliberately absent: that a path must open with a launch. The brief
+costs landing Apollo 11 on Earth as a mission in its own right, so a path that
+begins with a landing is legitimate input rather than a mistake.
+
+Continuity is only judged once every step is complete. A half-filled step is
+already reporting "can't be blank", and a second complaint about a path it
+cannot form yet is noise.
 
 Every event rebuilds the changeset from the raw params and recosts the mission,
 so an invalid mission clears the result rather than leaving a stale total on
