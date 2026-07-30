@@ -5,7 +5,7 @@ defmodule NasaFuelWeb.Layouts do
   """
   use NasaFuelWeb, :html
 
-  @docs_url "https://github.com/nasa-fuel/nasa_fuel/blob/main/README.md"
+  @docs_url "https://github.com/Kimutai01/nasa_fuel"
 
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
