@@ -197,7 +197,7 @@ defmodule NasaFuelWeb.MissionLive do
                   </div>
 
                   <.inputs_for :let={step} field={@form[:steps]}>
-                    <div id={"step-#{step.index}"} class="group relative flex items-start gap-3">
+                    <div id={"step-#{step.index}"} class="relative flex items-start gap-3">
                       <span class="z-10 mt-2.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-base-300 bg-base-100 text-xs font-medium tabular-nums text-base-content/50">
                         {step.index + 1}
                       </span>
@@ -217,13 +217,13 @@ defmodule NasaFuelWeb.MissionLive do
                           options={Flight.planet_options()}
                         />
                       </div>
-                      <%!-- Revealed on hover, but only where a pointer can hover.
-                      `group-hover` never fires on a touchscreen, so hiding by
-                      default there would make the control unreachable. --%>
+                      <%!-- Always visible: a control that only appears on hover is a
+                      control most people never discover, and hover does not exist
+                      on a touchscreen at all. --%>
                       <button
                         id={"remove-step-#{step.index}"}
                         type="button"
-                        class="mt-2.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-base-content/30 opacity-100 transition-all hover:bg-error/10 hover:text-error focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error motion-reduce:transition-none pointer-fine:opacity-0 pointer-fine:focus-visible:opacity-100 pointer-fine:group-hover:opacity-100"
+                        class="mt-2.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-base-content/40 transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error motion-reduce:transition-none"
                         phx-click="remove_step"
                         phx-value-index={step.index}
                         aria-label={"Remove step #{step.index + 1}"}
