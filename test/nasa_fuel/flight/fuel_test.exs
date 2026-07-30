@@ -110,6 +110,19 @@ defmodule NasaFuel.Flight.FuelTest do
       assert List.last(result.steps).mass == 28_801
     end
 
+    test "the result carries the dry mass it was asked about" do
+      assert {:ok, result} = Fuel.breakdown(28_801, [launch(:earth), land(:earth)])
+
+      assert result.mass == 28_801
+    end
+
+    test "the dry mass survives an empty flight path, which has no last step" do
+      assert {:ok, result} = Fuel.breakdown(28_801, [])
+
+      assert result.mass == 28_801
+      assert result.steps == []
+    end
+
     test "step fuel sums to the total" do
       path = [launch(:earth), land(:mars), launch(:mars), land(:earth)]
 

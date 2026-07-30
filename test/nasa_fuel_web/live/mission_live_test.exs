@@ -58,6 +58,12 @@ defmodule NasaFuelWeb.MissionLiveTest do
       # The last manoeuvre is costed against the bare dry mass.
       assert has_element?(view, "#breakdown-3-mass", "28,801")
     end
+
+    test "the summary reports the dry mass, not a mass carrying fuel", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      assert has_element?(view, "#mission-dry-mass", "28,801")
+    end
   end
 
   describe "editing the mission" do

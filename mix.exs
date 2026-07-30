@@ -10,8 +10,20 @@ defmodule NasaFuel.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      dialyzer: dialyzer(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
+    ]
+  end
+
+  # The PLT lives in the repo (gitignored) rather than the default location
+  # under _build, so `mix clean` and env switches do not throw away minutes of
+  # work rebuilding it.
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit]
     ]
   end
 
@@ -48,6 +60,7 @@ defmodule NasaFuel.MixProject do
       {:phoenix_live_view, "~> 1.2.0"},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.5", runtime: Mix.env() == :dev},
       {:heroicons,
@@ -93,6 +106,7 @@ defmodule NasaFuel.MixProject do
         "deps.unlock --unused",
         "format",
         "credo --strict",
+        "dialyzer",
         "test"
       ]
     ]

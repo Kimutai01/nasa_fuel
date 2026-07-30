@@ -39,7 +39,7 @@ Nothing else is needed:
 ```sh
 mix setup        # fetch deps, install and build assets
 mix phx.server   # http://localhost:4000
-mix test         # 86 tests + 3 doctests, no database required
+mix test         # 89 tests + 3 doctests, no database required
 mix precommit    # the full gate: compile, deps, format, credo, test
 ```
 
@@ -53,12 +53,18 @@ mix precommit    # the full gate: compile, deps, format, credo, test
 | `deps.unlock --unused` | dependencies left in `mix.lock` after being dropped |
 | `format` | formatting drift |
 | `credo --strict` | complexity, nesting depth, alias ordering, missing docs |
+| `dialyzer` | `@spec`s that disagree with the code, unreachable clauses |
 | `test` | the suite |
 
 `credo --strict` currently reports no issues across all 25 source files. Strict
 mode is deliberate — it turns on the nitpick checks (cyclomatic complexity,
 function arity, alias usage) that the default run skips, which is the half worth
 having on a codebase this size.
+
+Every public function carries a `@spec`, and `dialyzer` is what stops those from
+becoming decoration: it currently reports 0 errors. The first run spends about a
+minute building its PLT into `priv/plts/` (gitignored); later runs take a
+second.
 
 Note that `format` rewrites files in place, so `mix precommit` can leave the
 working tree modified even when every step passes. Check `git status` before

@@ -217,10 +217,13 @@ defmodule NasaFuelWeb.MissionLive do
                           options={Flight.planet_options()}
                         />
                       </div>
+                      <%!-- Revealed on hover, but only where a pointer can hover.
+                      `group-hover` never fires on a touchscreen, so hiding by
+                      default there would make the control unreachable. --%>
                       <button
                         id={"remove-step-#{step.index}"}
                         type="button"
-                        class="mt-2.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-base-content/30 opacity-0 transition-all hover:bg-error/10 hover:text-error focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error group-hover:opacity-100 motion-reduce:transition-none"
+                        class="mt-2.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-base-content/30 opacity-100 transition-all hover:bg-error/10 hover:text-error focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error motion-reduce:transition-none pointer-fine:opacity-0 pointer-fine:focus-visible:opacity-100 pointer-fine:group-hover:opacity-100"
                         phx-click="remove_step"
                         phx-value-index={step.index}
                         aria-label={"Remove step #{step.index + 1}"}
@@ -296,7 +299,7 @@ defmodule NasaFuelWeb.MissionLive do
       <dl class="mt-5 space-y-2 border-t border-base-300 pt-4 text-sm">
         <div class="flex items-baseline justify-between gap-3">
           <dt class="text-base-content/50">Spacecraft</dt>
-          <dd class="tabular-nums">{format(dry_mass(@result.steps))} kg</dd>
+          <dd id="mission-dry-mass" class="tabular-nums">{format(@result.mass)} kg</dd>
         </div>
         <div class="flex items-baseline justify-between gap-3">
           <dt class="text-base-content/50">Manoeuvres</dt>
@@ -393,8 +396,6 @@ defmodule NasaFuelWeb.MissionLive do
     </section>
     """
   end
-
-  defp dry_mass(steps), do: steps |> List.last() |> Map.fetch!(:mass)
 
   defp heaviest(steps), do: steps |> Enum.map(& &1.mass) |> Enum.max(&>=/2, fn -> 1 end)
 

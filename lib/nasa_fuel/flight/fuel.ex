@@ -34,7 +34,7 @@ defmodule NasaFuel.Flight.Fuel do
           fuel: non_neg_integer()
         }
 
-  @type result :: %{total: non_neg_integer(), steps: [entry()]}
+  @type result :: %{total: non_neg_integer(), mass: pos_integer(), steps: [entry()]}
 
   @type error :: {:unknown_planet, any()} | {:unknown_action, any()} | {:invalid_step, any()}
 
@@ -44,7 +44,8 @@ defmodule NasaFuel.Flight.Fuel do
   Steps are given and returned in flight order, though they are calculated in
   reverse. Each returned entry carries the `:mass` it was calculated against —
   the dry mass plus fuel for every later step — which is what makes the reverse
-  fold visible in the UI.
+  fold visible in the UI. The result's own `:mass` is the dry mass the caller
+  asked about, so nothing downstream has to recover it from the entries.
 
   An empty flight path needs no fuel and returns a total of `0`.
   """
@@ -59,7 +60,7 @@ defmodule NasaFuel.Flight.Fuel do
       end
     end)
     |> case do
-      {:ok, total, entries} -> {:ok, %{total: total, steps: entries}}
+      {:ok, total, entries} -> {:ok, %{total: total, mass: mass, steps: entries}}
       {:error, reason} -> {:error, reason}
     end
   end
